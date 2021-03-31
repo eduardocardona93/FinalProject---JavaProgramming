@@ -74,5 +74,13 @@ public class Savings extends Account {
 		System.out.println("Savings account "+ accNo + ", balance: $"+ String.format( "%.2f", accBalance));
 	}
 
-    
+
+
+	@Override
+	// function to return a formatted savings account info to save in external txt file 
+	public String txtFileFormat() {
+		return "Savings," + accNo + "," + accClientId + "," + accBalance + "," + savFreeTransactions + "," + savTransactionsCost;
+	}
+
+
 }

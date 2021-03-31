@@ -1,3 +1,9 @@
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -5,21 +11,24 @@ public class Main {
 	public static ArrayList<Client> clients = new ArrayList<>();
 	public static ArrayList<Account> accounts = new ArrayList<>();
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		Scanner sc0 = new Scanner(System.in);
-		// TODO : load
-		// loads the clients and accounts from the files if exists
-		// loadFromFile()
-	    clients.add(new Client( "Lino", "Hernandez", 45678, "109 Finch", "6473000880" , "1234"));
-	    accounts.add(new Checking(11111, 45678, 400.0, 300.0) );
-	    accounts.add(new Savings(22222, 45678, 150.0, 3, 2.0));
 
-	    clients.add(new Client( "Dina", "Johnson", 78901, "206 Bathurst", "6474500880" , "1234"));
-	    accounts.add(new Checking(44444, 78901, 290.0, 320.0 ));
-	    accounts.add(new Savings(55555, 78901, 110.0, 5,  1.5));
+		readFromFileAccounts();
+		readFromFileClients();
+		
+//	    clients.add(new Client( "Lino", "Hernandez", 45678, "109 Finch", "6473000880" , "1234"));
+//	    accounts.add(new Checking(11111, 45678, 400.0, 300.0) );
+//	    accounts.add(new Savings(22222, 45678, 150.0, 3, 2.0));
+//
+//	    clients.add(new Client( "Dina", "Johnson", 78901, "206 Bathurst", "6474500880" , "1234"));
+//	    accounts.add(new Checking(44444, 78901, 290.0, 320.0 ));
+//	    accounts.add(new Savings(55555, 78901, 110.0, 5,  1.5));
+//	    writeToFileClients();
+//	    writeToFileAccounts();
 		// Initial menu
 		do {
-			// Decides de type of user
+			// Decides the type of user
 			System.out.println("\nWhat are you?\n");
 			System.out.println("1. Admin");
 			System.out.println("2. Client\n");
@@ -99,7 +108,7 @@ public class Main {
 		return null; // if not found return null
 	}
 
-	//searchs for an account by its 'no' and returns the 'index' in the accounts array
+	//Searches for an account by its 'no' and returns the 'index' in the accounts array
 	public static int getAccountIndex(int no){
 		// iterates all the accounts by index
 		for (int i = 0; i < accounts.size(); i++) {
@@ -145,12 +154,15 @@ public class Main {
 				}else{ // if account already exists
 					System.out.println("The account with the number '" + no + "' already exists ");
 				}
-
-				// keep adding acounts mesage
+				// keep adding accounts message
 				System.out.println("\n\nDo you want to create another account for this client?y/n");
 			} while (sc1.next().equalsIgnoreCase("y"));
-
-			
+			// save file accounts
+			try {
+				writeToFileAccounts();
+			} catch (IOException e) {
+				e.printStackTrace();
+			} 
 		}else{ // if client does not exists
 			System.out.println("Client not found");
 		}
@@ -177,7 +189,12 @@ public class Main {
 				System.out.println("Account edited Succesfully\n");
 				
 			}
-
+			// save file accounts
+			try {
+				writeToFileAccounts();
+			} catch (IOException e) {
+				e.printStackTrace();
+			} 
 		}else { // if  account found then print message
 			System.out.println("Account number not found\n");
 		}
@@ -219,6 +236,12 @@ public class Main {
 						System.out.println("Deposit succesfully done!");
 					}
 				}
+				// save file accounts
+				try {
+					writeToFileAccounts();
+				} catch (IOException e) {
+					e.printStackTrace();
+				} 
 				
 			} else {
 				System.out.println("Account not Deleted");
@@ -287,10 +310,15 @@ public class Main {
 			}else{// duplicate client found
 				System.out.println("There is already a client with this id number\n");
 			}
-			// keep adding clients mesage
+			// keep adding clients message
 			System.out.println("Do you want to create another Client? y/n");
 		}while( sc4.next().equalsIgnoreCase("y"));
-		
+		// save all clients
+		try {
+			writeToFileClients();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} 
 	}
 	// edits a client's info
 	public static void editClient(int id){
@@ -309,10 +337,16 @@ public class Main {
 			System.out.println("Enter client phone no:");
 			client.cliPhoneNo = sc5.nextLine();
 			System.out.println("Client info succesfully edited\n");
-			
+			// save file clients
+			try {
+				writeToFileClients();
+			} catch (IOException e) {
+				e.printStackTrace();
+			} 
 		}else{ // client does not exists
 			System.out.println("Client id '" + id + "' not found\n");
 		}
+		
 		
 	}
 	// changes a client's pin
@@ -329,7 +363,12 @@ public class Main {
 			if(pin1.equalsIgnoreCase(pin2)){ // if pins match then edit the value in the object
 				client.setCliPin(pin1);
 				System.out.println("Pin changed successfully\n");
-				
+				// save file clients
+				try {
+					writeToFileClients();
+				} catch (IOException e) {
+					e.printStackTrace();
+				} 
 			}else{
 				System.out.println("The entered pins does not match\n");
 			}
@@ -345,16 +384,21 @@ public class Main {
 			ArrayList<Account> clientAccounts = getClientAccounts(id); // get client's accounts
 			System.out.println("Do you really want to delete the client '" + delClient.fullName() + "' and the " + clientAccounts.size() + " account(s) belonging to this client? y/n");
 			if( sc7.next().equalsIgnoreCase("y") ){
-				// client's accounts itteration
+				// client's accounts iteration
 				for (Account acc : clientAccounts) {
 					int accIndex = getAccountIndex(acc.getAccNo()); // gets the client's account index in the clients array
 					accounts.remove(accIndex); // delete client's account from clients array
 				}
 				int cliIndex = getClientIndex(id); // gets the client index in the clients array
 				clients.remove(cliIndex); // delete client from clients array
-				
-				
 				System.out.println("Client and accounts succesfully deleted\n");
+				// save all clients
+				try {
+					writeToFileClients();
+					writeToFileAccounts();
+				} catch (IOException e) {
+					e.printStackTrace();
+				} 
 			}
 		}else{ // client does not exists
 			System.out.println("Client id '" + id + "' not found\n");
@@ -514,13 +558,23 @@ public class Main {
 					System.out.println("Enter the amount you want to deposit");
 					amountInput = sc11.nextDouble();
 					accountObj.DepositMoney(amountInput); // deposits the money
-					// TODO : SAVE TO FILE
+					// save file accounts
+					try {
+						writeToFileAccounts();
+					} catch (IOException e) {
+						e.printStackTrace();
+					} 
 					break;
 				case 3: // Draw money
 					System.out.println("Enter the amount you want to draw");
 					amountInput = sc11.nextDouble();
 					if(accountObj.DrawMoney(amountInput)){ // if the draw was successful
-						// TODO : SAVE TO FILE
+						// save file accounts
+						try {
+							writeToFileAccounts();
+						} catch (IOException e) {
+							e.printStackTrace();
+						} 
 					}
 					break;
 				case 4: // Transfer money to other accounts within the bank
@@ -531,7 +585,6 @@ public class Main {
 						Account acc =  clientAccs.get(i);
 						System.out.println( (i+1) +". " + acc.getAccNo() + " (" + acc.getClass().getName()  + ")"); 
 					}
-
 					int destIndex = sc11.nextInt();
 					// validates the index account
 					if(destIndex > 0 && (destIndex-1) <= clientAccs.size()) {
@@ -539,7 +592,12 @@ public class Main {
 						System.out.println("Enter the amount you want to transfer");
 						amountInput = sc11.nextDouble();
 						if(accountObj.transferToAccount(amountInput, accountDestination)){ // if the transfer was successful
-							// TODO : SAVE TO FILE
+							// save file accounts
+							try {
+								writeToFileAccounts();
+							} catch (IOException e) {
+								e.printStackTrace();
+							} 
 						}
 					}else{
 						System.out.println("Wrong input");
@@ -554,8 +612,13 @@ public class Main {
 					System.out.println("Enter the amount of your bill");
 					amountInput = sc11.nextDouble();
 					if (accountObj.DrawMoney(amountInput)) { // if the pay process was successful
-						// TODO : SAVE TO FILE
 						System.out.println("Your bill '" + billType + "' has been paid");
+						// save file accounts
+						try {
+							writeToFileAccounts();
+						} catch (IOException e) {
+							e.printStackTrace();
+						} 
 					}else{
 						System.out.println("Sorry, it was not possible to pay your '" + billType + "' bill");
 					}
@@ -574,8 +637,66 @@ public class Main {
 					break;
 			}
 		}while(choice != 0);
-
-
 	}
+	/************************************************** FILES FUNCTIONS **********************************************/
+	
+	public static void readFromFileAccounts() throws IOException
+	{
+		FileInputStream empFile=new FileInputStream("accounts.txt");
+		BufferedReader br=new BufferedReader(new InputStreamReader(empFile));
+		
+		Account acc;
+		String line;
+		while((line=br.readLine())!=null) {
+			String fields[]=line.split(",");
+			if(fields[0].equals("Savings")) {
+				acc=new Savings(Integer.parseInt(fields[1]), Integer.parseInt(fields[2]), Double.parseDouble(fields[3]), Integer.parseInt(fields[4]), Double.parseDouble(fields[5]));
+				accounts.add(acc);
+			}
+			else if(fields[0].equals("Checking")) {
+				acc=new Checking(Integer.parseInt(fields[1]), Integer.parseInt(fields[2]), Double.parseDouble(fields[3]), Double.parseDouble(fields[4]));
+				accounts.add(acc);
+			}			
+		}
+		br.close();
+	}
+	
+	public static void readFromFileClients() throws IOException
+	{
+		FileInputStream empFile=new FileInputStream("clients.txt");
+		BufferedReader br=new BufferedReader(new InputStreamReader(empFile));
+		
+		Client cli;
+		String line;
+		while((line=br.readLine())!=null) {
+			String fields[]=line.split(",");
+			cli=new Client(fields[0], fields[1], Integer.parseInt(fields[2]), fields[3], fields[4], fields[5]);
+			clients.add(cli);
+		}
+		br.close();
+	}
+	
+	public static void writeToFileAccounts() throws IOException {
+		//create a new file named .txt, if the file exists will be overwritten
+		FileWriter emp = new FileWriter("accounts.txt");
+		PrintWriter pw=new PrintWriter(emp);
+		
+		for (Account account : accounts) {
+			pw.println(account.txtFileFormat());
+		}
 
+		pw.close();
+	}
+	
+	public static void writeToFileClients() throws IOException {
+		//create a new file named .txt, if the file exists will be overwritten
+		FileWriter emp = new FileWriter("clients.txt");
+		PrintWriter pw=new PrintWriter(emp);
+		
+		for (Client client : clients) {
+			pw.println(client.txtFileFormat());
+		}
+		
+		pw.close();
+	}
 }	

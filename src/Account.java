@@ -65,6 +65,8 @@ public abstract class Account {
 
     // function to print the account balance
     public abstract void printBalance();
+    // function to return a formatted savings account info to save in external txt file 
+    public abstract String txtFileFormat();
 
     // function to transfer an amount of money from the account to a destination account 
     // returns a boolean value to indicate whether the process had success or not 

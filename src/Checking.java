@@ -61,5 +61,9 @@ public class Checking extends Account {
 		System.out.println("Checking account "+ accNo + ", balance: $"+ String.format( "%.2f", accBalance));
 	}
 
-
+	@Override
+	// function to return a formatted checking account info to save in external txt file 
+	public String txtFileFormat() {
+		return "Checking," + accNo + "," + accClientId + "," + accBalance + "," + chkOverdraftFee ;
+	}
 }

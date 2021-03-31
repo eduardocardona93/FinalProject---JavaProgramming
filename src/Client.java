@@ -74,5 +74,9 @@ public class Client {
 				+ ", Address=" + cliAddress + ", Phone No=" + cliPhoneNo ;
 	}
 	
+	public String txtFileFormat() {
+		return cliFirstName + "," + cliLastName + "," + cliId + "," + cliAddress + "," + cliPhoneNo + "," + cliPin ;
+	}
+	
 	
 }
