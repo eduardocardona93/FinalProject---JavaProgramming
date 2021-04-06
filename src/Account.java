@@ -14,7 +14,6 @@ public abstract class Account {
     
 
 	public Account(int accNo, int accClientId, double accBalance) {
-		super();
 		this.accNo = accNo;
 		this.accClientId = accClientId;
 		this.accBalance = accBalance;
@@ -49,25 +48,12 @@ public abstract class Account {
 	public double getAccBalance() {
 		return accBalance;
 	}
-
-
-	// function to draw money from the account
-    // returns a boolean value to indicate whether the process had success or not 
-    public abstract Boolean DrawMoney(double moneyTotal);
-
+	
     // function to print the account attributes
 	public String toString() {
 		return "Account No=" + accNo + ", Client Id=" + accClientId + ", Balance=" + String.format("%.2f", accBalance);
 	}
-
-	// function to deposit money into the account
-    public abstract void DepositMoney(double moneyTotal);
-
-    // function to print the account balance
-    public abstract void printBalance();
-    // function to return a formatted savings account info to save in external txt file 
-    public abstract String txtFileFormat();
-
+	
     // function to transfer an amount of money from the account to a destination account 
     // returns a boolean value to indicate whether the process had success or not 
     public Boolean transferToAccount(double moneyTotal, Account desAccount ) {
@@ -82,4 +68,20 @@ public abstract class Account {
             return false;
         }
     }
+
+	// function to draw money from the account
+    // returns a boolean value to indicate whether the process had success or not 
+    public abstract Boolean DrawMoney(double moneyTotal);
+
+
+	// function to deposit money into the account
+    public abstract void DepositMoney(double moneyTotal);
+
+    // function to print the account balance
+    public abstract void printBalance();
+    // function to return a formatted savings account info to save in external txt file 
+    public abstract String txtFileFormat();
+
+
+
 }

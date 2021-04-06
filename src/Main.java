@@ -16,16 +16,7 @@ public class Main {
 
 		readFromFileAccounts();
 		readFromFileClients();
-		
-//	    clients.add(new Client( "Lino", "Hernandez", 45678, "109 Finch", "6473000880" , "1234"));
-//	    accounts.add(new Checking(11111, 45678, 400.0, 300.0) );
-//	    accounts.add(new Savings(22222, 45678, 150.0, 3, 2.0));
-//
-//	    clients.add(new Client( "Dina", "Johnson", 78901, "206 Bathurst", "6474500880" , "1234"));
-//	    accounts.add(new Checking(44444, 78901, 290.0, 320.0 ));
-//	    accounts.add(new Savings(55555, 78901, 110.0, 5,  1.5));
-//	    writeToFileClients();
-//	    writeToFileAccounts();
+
 		// Initial menu
 		do {
 			// Decides the type of user
@@ -62,14 +53,20 @@ public class Main {
 									Account acc = clientAccs.get(i);
 									System.out.println((i+1) +  ". " + acc.getAccNo() + " (" + acc.getClass().getName() + ")"); // print them with an index
 								}
-								int accInput = sc0.nextInt();
-								// validates the index account
-								if(accInput > 0 && (accInput) <= clientAccs.size() ){// as the indexes starts in 1 not 0 then array length is a valid value
-									Account account = clientAccs.get(accInput - 1); // get the account object
-									clientMenu(client, account); // call the client menu
-								}else{
+								try {
+									int accInput = sc0.nextInt();
+									// validates the index account
+									if(accInput > 0 && (accInput) <= clientAccs.size() ){// as the indexes starts in 1 not 0 then array length is a valid value
+										Account account = clientAccs.get(accInput - 1); // get the account object
+										clientMenu(client, account); // call the client menu
+									}else{
+										System.out.println("Wrong input");
+									}
+								} catch (Exception e) {
+									// in case there is a wrong value
 									System.out.println("Wrong input");
 								}
+
 								break; // do not repeat again the pin request
 							}else{ // unsuccessful attempt
 								attempts -= 1; // reduce attempts allowed
@@ -100,7 +97,7 @@ public class Main {
 	public static Account getAccountByNo(int no){
 		// iterates all the accounts by object
 		for (Account account : accounts) {
-			if (account.accNo == no) { // when matching the account number
+			if (account.getAccNo() == no) { // when matching the account number
 				return account; // return the Account object
 			}
 		}
@@ -112,7 +109,7 @@ public class Main {
 	public static int getAccountIndex(int no){
 		// iterates all the accounts by index
 		for (int i = 0; i < accounts.size(); i++) {
-			if (accounts.get(i).accNo == no) { // when matching the account number
+			if (accounts.get(i).getAccNo() == no) { // when matching the account number
 				return i; // return the array index
 			}
 		}
@@ -216,7 +213,7 @@ public class Main {
 				System.out.println("Account Deleted succesfully!");
 
 				// gets all the client accounts left
-				ArrayList<Account> clientAccounts = getClientAccounts(delAccount.accClientId);
+				ArrayList<Account> clientAccounts = getClientAccounts(delAccount.getAccClientId());
 				// validates if there is at least 1 account left for this client
 				// also, validates if the deleted has money left
 				int cliAccsLen = clientAccounts.size();
@@ -226,14 +223,31 @@ public class Main {
 					System.out.println("Do you want to deposit this account total balance ( $ " + String.format( "%.2f", balance)  + ") to another account? y/n");
 					// validates if wants to make a deposit to one of the remaining accounts
 					if(sc3.next().equalsIgnoreCase("y")){
-						System.out.println("Select the Account");
-						// iterates all client's account with an index to select the one who gets the deposit
-						for (int i = 0; i < cliAccsLen; i++) {
-							System.out.println( (i + 1 ) + ". " + clientAccounts.get(i).accNo);
-						}
-						int selectedAccount = sc3.nextInt();
-						clientAccounts.get(selectedAccount-1).DepositMoney(balance); // deposits the money
-						System.out.println("Deposit succesfully done!");
+						boolean flagCorrectAccount = false;
+						//enters a loop until the user inputs a correct account
+						do {
+							System.out.println("Select the Account index");
+							// iterates all client's account with an index to select the one who gets the deposit
+							for (int i = 0; i < cliAccsLen; i++) {
+								System.out.println( (i + 1 ) + ". " + clientAccounts.get(i).getAccNo());
+							}
+							try {
+								int selectedAccount = sc3.nextInt();
+								if(selectedAccount > 0 && (selectedAccount-1) < cliAccsLen) {
+									clientAccounts.get(selectedAccount-1).DepositMoney(balance); // deposits the money to the left account
+									System.out.println("Deposit succesfully done!");
+									flagCorrectAccount = true;
+								}else {
+									System.out.println("Wrong input, try again");
+								}
+							}catch (Exception e) {
+								// in case there is a wrong value
+								System.out.println("Wrong input, the money was not transfered");
+								flagCorrectAccount = true;
+							}
+						}while(!flagCorrectAccount);
+
+
 					}
 				}
 				// save file accounts
@@ -442,6 +456,7 @@ public class Main {
 					System.out.println("Enter cliend id:");
 					clientId = sc8.nextInt();
 					changeClientPin(clientId);
+					break;
 				case 5: // Delete a client
 					System.out.println("Enter cliend id:");
 					clientId = sc8.nextInt();
@@ -578,30 +593,37 @@ public class Main {
 					}
 					break;
 				case 4: // Transfer money to other accounts within the bank
-					ArrayList<Account> clientAccs = getClientAccounts(clientObj.getCliId()); // gets the client accounts
-					System.out.println("\nSelect the index of the destination account:");
-					for (int i = 0; i < clientAccs.size(); i++) { // iterates the client accounts
-						// print them with an index
-						Account acc =  clientAccs.get(i);
-						System.out.println( (i+1) +". " + acc.getAccNo() + " (" + acc.getClass().getName()  + ")"); 
-					}
-					int destIndex = sc11.nextInt();
-					// validates the index account
-					if(destIndex > 0 && (destIndex-1) <= clientAccs.size()) {
-						Account accountDestination = clientAccs.get(destIndex - 1); // get the account object
-						System.out.println("Enter the amount you want to transfer");
-						amountInput = sc11.nextDouble();
-						if(accountObj.transferToAccount(amountInput, accountDestination)){ // if the transfer was successful
-							// save file accounts
-							try {
-								writeToFileAccounts();
-							} catch (IOException e) {
-								e.printStackTrace();
-							} 
+
+					try {
+						ArrayList<Account> clientAccs = getClientAccounts(clientObj.getCliId()); // gets the client accounts
+						System.out.println("\nSelect the index of the destination account:");
+						for (int i = 0; i < clientAccs.size(); i++) { // iterates the client accounts
+							// print them with an index
+							Account acc =  clientAccs.get(i);
+							System.out.println( (i+1) +". " + acc.getAccNo() + " (" + acc.getClass().getName()  + ")"); 
 						}
-					}else{
+						int destIndex = sc11.nextInt();
+						// validates the index account
+						if(destIndex > 0 && (destIndex-1) <= clientAccs.size()) {
+							Account accountDestination = clientAccs.get(destIndex - 1); // get the account object
+							System.out.println("Enter the amount you want to transfer");
+							amountInput = sc11.nextDouble();
+							if(accountObj.transferToAccount(amountInput, accountDestination)){ // if the transfer was successful
+								// save file accounts
+								try {
+									writeToFileAccounts();
+								} catch (IOException e) {
+									e.printStackTrace();
+								} 
+							}
+						}else{
+							System.out.println("Wrong input");
+						}
+					}catch (Exception e) {
+						// in case there is a wrong value
 						System.out.println("Wrong input");
 					}
+
 					break;
 
 				case 5: // Pay utility bills
@@ -679,7 +701,7 @@ public class Main {
 	public static void writeToFileAccounts() throws IOException {
 		//create a new file named .txt, if the file exists will be overwritten
 		FileWriter emp = new FileWriter("accounts.txt");
-		PrintWriter pw=new PrintWriter(emp);
+		PrintWriter pw = new PrintWriter(emp);
 		
 		for (Account account : accounts) {
 			pw.println(account.txtFileFormat());

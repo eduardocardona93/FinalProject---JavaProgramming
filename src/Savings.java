@@ -12,10 +12,10 @@ public class Savings extends Account {
 	
 	
 	public Savings(int accNo, int accClientId, double balance, int savFreeTransactions, double savTransactionsCost) {
-	super(accNo, accClientId,balance);
-	this.savFreeTransactions = savFreeTransactions;
-	this.savTransactionsCost = savTransactionsCost;
-}
+		super(accNo, accClientId,balance);
+		this.savFreeTransactions = savFreeTransactions;
+		this.savTransactionsCost = savTransactionsCost;
+	}
 
 
 
@@ -42,14 +42,14 @@ public class Savings extends Account {
     // returns a boolean value to indicate whether the process had success or not 
 	public Boolean DrawMoney(double moneyTotal) {
         double totalDeduct = moneyTotal;
-        if  (savFreeTransactions > 0 ) { // if the user has free transactions left
-            savFreeTransactions -= 1; // reduce the free transactions number
-            System.out.println("Free transactions left: " + savFreeTransactions);
-        }else{ // if the user run out of free transactions
+        if  (savFreeTransactions == 0 ) { // if the user run out of free transactions
             System.out.println("Service Cost: $" + String.format( "%.2f", savTransactionsCost)); // shows the cost
             totalDeduct += savTransactionsCost;  // add the transactions cost to the total deduction
         }
         if(accBalance - totalDeduct >= 0 ) { // if the balance is enough to draw the total deduction
+            savFreeTransactions -= 1; // reduce the free transactions number
+            System.out.println("Free transactions left: " + savFreeTransactions);
+            
             accBalance -= totalDeduct;  // deduct the money
             System.out.println("Savings account deduction successfully made");
             

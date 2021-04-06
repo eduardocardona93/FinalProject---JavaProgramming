@@ -51,7 +51,7 @@ public class Checking extends Account {
     // function to deposit money into the account
 	public void DepositMoney(double moneyTotal) {
         accBalance += moneyTotal; // add the money to the balance
-        System.out.println("Savings account deposit successfully made");
+        System.out.println("Checking account deposit successfully made");
         printBalance(); // prints the balance
 	}
 
